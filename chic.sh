@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function usage
+usage ()
 {
 	echo "-f or --file specifies the name of the program to change the icon for"
 	echo "	search for the name on this computer and enter that example /"Spotify/""
@@ -8,6 +8,19 @@ function usage
 	echo "	and should be at least 256pxx256px"
 	echo "The two tags listed above are necessary for this process to work"
 	echo "-h or --help to see this information again"
+}
+
+overWriteName() {
+echo "$0  $1"
+applications=~/.local/share/applications
+cd $applications
+filename=$(grep -l -s $1 *)
+oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
+#Extract name from file path
+newIcon="${2##*/}"
+newIcon="${newIcon%%.png}"
+
+#sed -i "s/Icon=$oldIcon/Icon=$newIcon/g" $filename
 }
 
 program=@
@@ -28,15 +41,7 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-
-applications=~/.local/share/applications
-cd $applications
-filename=$(grep -l -s $program *)
-oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
-#Extract name from file path
-newIcon="${picture##*/}"
-newIcon="${newIcon%%.png}"
-
-sed -i "s/Icon=$oldIcon/Icon=$newIcon/g" $filename
+echo "$program $picture"
+overWriteName $program $picture
 
 exit
