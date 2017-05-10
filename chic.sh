@@ -13,14 +13,13 @@ usage ()
 copyDesktopFile() {
 	cd /usr/share/applications
 	filename=$(grep -l -s "$1" *)
-	echo "$filename"
 	cp $filename ~/.local/share/applications
+	cd ~/.local/share/applications
 	oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
 	overWriteName $filename $oldIcon $3 
 }
 
 overWriteName() {
-    echo "$1 $2 $3"
     sed -i "s/Icon=$2/Icon=$3/g" "$1"
 }
 
@@ -35,7 +34,6 @@ homeOrShare() {
 		oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p") 
 		overWriteName $filename $oldIcon $newIcon
 	else
-		echo "$1 $2"
 		copyDesktopFile $1 $2 $newIcon		
 	fi
 }
