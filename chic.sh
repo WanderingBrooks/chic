@@ -10,17 +10,20 @@ usage ()
 	echo "-h or --help to see this information again"
 }
 
-copyDesktopFile() {
-	cd /usr/share/applications
-	filename=$(grep -l -s "$1" *)
-	cp $filename ~/.local/share/applications
-	cd ~/.local/share/applications
-	oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
-	overWriteName $filename $oldIcon $3 
+copyImages() {
+	find . -type f -name 'spotify-client.png' | xargs cp --parents -t ~/.local/share/icons/hicolor/
 }
-
 overWriteName() {
     sed -i "s/Icon=$2/Icon=$3/g" "$1"
+}
+
+copyDesktopFile() {
+    cd /usr/share/applications
+    filename=$(grep -l -s "$1" *)
+    cp $filename ~/.local/share/applications
+    cd ~/.local/share/applications
+    oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
+    overWriteName "$filename" "$oldIcon" "$3" 
 }
 
 homeOrShare() {
@@ -34,7 +37,7 @@ homeOrShare() {
 		oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p") 
 		overWriteName $filename $oldIcon $newIcon
 	else
-		copyDesktopFile $1 $2 $newIcon		
+		copyDesktopFile "$1" "$2" "$newIcon"		
 	fi
 }
 
