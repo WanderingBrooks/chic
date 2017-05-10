@@ -10,20 +10,32 @@ usage ()
 	echo "-h or --help to see this information again"
 }
 
-copyImages() {
-	find . -type f -name 'spotify-client.png' | xargs cp --parents -t ~/.local/share/icons/hicolor/
-}
-overWriteName() {
-    sed -i "s/Icon=$2/Icon=$3/g" "$1"
+removeOldAndAddNewIcons() {
+	cd ~/.local/share/
+	cd ~/.local/share/icons/hicolor/
+	for D in `find */apps -type d`;  
+		do 
+			if [ -f "$D/$2.png" ]
+			then
+				echo "here"
+			fi 
+		done
 }
 
-copyDesktopFile() {
+changeIcon() {
+    sed -i "s/Icon=$2/Icon=$3/g" "$1"
+	removeOldAndAddNewIcons $2 $3
+}
+
+copyDesktopFileAndIcons() {
     cd /usr/share/applications
     filename=$(grep -l -s "$1" *)
     cp $filename ~/.local/share/applications
     cd ~/.local/share/applications
     oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
-    overWriteName "$filename" "$oldIcon" "$3" 
+	# Copy tree structure for hicolor and original icon files to .local
+	find . -type f -name "$oldIcon" | xargs cp --parents -t ~/.local/share/icons/hicolor/
+    changeIcon "$filename" "$oldIcon" "$3" 
 }
 
 homeOrShare() {
@@ -32,12 +44,12 @@ homeOrShare() {
 	#Extract name from file path
 	newIcon="${2##*/}"
 	newIcon="${newIcon%%.png}"
-	if [ "$fiename" != "" ]
+	if [ ! -z "$filename" ]
 	then
 		oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p") 
-		overWriteName $filename $oldIcon $newIcon
+		changeIcon $filename $oldIcon $newIcon
 	else
-		copyDesktopFile "$1" "$2" "$newIcon"		
+		copyDesktopFileAndIcons "$1" "$2" "$newIcon"		
 	fi
 }
 
