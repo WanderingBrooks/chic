@@ -45,10 +45,10 @@ picture=@
 while [ "$1" != "" ]; do
     case $1 in
         -f | --file )           shift
-                                picture=$1
+                                program=$1
                                 ;;
         -p | --picture )    	shift
-								program=$1
+								picture=$1
                                 ;;
         -h | --help )           usage
                                 exit
