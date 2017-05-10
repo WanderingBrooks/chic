@@ -10,17 +10,34 @@ usage ()
 	echo "-h or --help to see this information again"
 }
 
-overWriteName() {
-echo "$0  $1"
-applications=~/.local/share/applications
-cd $applications
-filename=$(grep -l -s $1 *)
-oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
-#Extract name from file path
-newIcon="${2##*/}"
-newIcon="${newIcon%%.png}"
+copyDesktopFile() {
+	cd /usr/share/applications
+	filename=$(grep -l -s "$1" *)
+	echo "$filename"
+	cp $filename ~/.local/share/applications
+	oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
+	overWriteName $filename $oldIcon $3 
+}
 
-#sed -i "s/Icon=$oldIcon/Icon=$newIcon/g" $filename
+overWriteName() {
+    echo "$1 $2 $3"
+    sed -i "s/Icon=$2/Icon=$3/g" "$1"
+}
+
+homeOrShare() {
+	cd ~/.local/share/applications
+	filename=$(grep -l -s "$1" *)
+	#Extract name from file path
+	newIcon="${2##*/}"
+	newIcon="${newIcon%%.png}"
+	if [ "$fiename" != "" ]
+	then
+		oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p") 
+		overWriteName $filename $oldIcon $newIcon
+	else
+		echo "$1 $2"
+		copyDesktopFile $1 $2 $newIcon		
+	fi
 }
 
 program=@
@@ -28,10 +45,10 @@ picture=@
 while [ "$1" != "" ]; do
     case $1 in
         -f | --file )           shift
-                                program=$1
+                                picture=$1
                                 ;;
         -p | --picture )    	shift
-								picture=$1
+								program=$1
                                 ;;
         -h | --help )           usage
                                 exit
@@ -41,7 +58,7 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-echo "$program $picture"
-overWriteName $program $picture
+
+homeOrShare "$program" "$picture"
 
 exit
