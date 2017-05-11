@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#bash chic.sh -p sublime-updated.png -f Sublime\ Text
 usage ()
 {
 	echo "-f or --file specifies the name of the program to change the icon for"
@@ -11,15 +11,15 @@ usage ()
 }
 
 removeOldAndAddNewIcons() {
-	cd ~/.local/share/
 	cd ~/.local/share/icons/hicolor/
 	for D in `find */apps -type d`;  
 		do 
-			if [ -f "$D/$2.png" ]
+			if [ -f "$D/$1.png" ]
 			then
-				echo "here"
+				rm "$D/$1.png"
+				convert "$picture" -resize "${D%%x*}" "$D/$2.png"
 			fi 
-		done
+	done
 }
 
 changeIcon() {
@@ -33,7 +33,9 @@ copyDesktopFileAndIcons() {
     cp $filename ~/.local/share/applications
     cd ~/.local/share/applications
     oldIcon=$(grep Icon= $filename | sed -n "s/Icon=//p")
+	echo "$oldIcon"
 	# Copy tree structure for hicolor and original icon files to .local
+	cd /usr/share/icons/hicolor
 	find . -type f -name "$oldIcon" | xargs cp --parents -t ~/.local/share/icons/hicolor/
     changeIcon "$filename" "$oldIcon" "$3" 
 }
